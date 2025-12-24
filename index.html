@@ -1,27 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Jinx4G Session Generator</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jinx4G Session ID</title>
+
+<style>
+  body {
+    background: #0a0a0a;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+  }
+  .box {
+    background: #111;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px red;
+  }
+  h1 {
+    color: #ff0044;
+  }
+  input {
+    width: 260px;
+    padding: 10px;
+    margin: 8px;
+    border-radius: 5px;
+    border: none;
+  }
+  button {
+    padding: 10px 20px;
+    background: #ff0044;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #ff3366;
+  }
+  #verify {
+    display: none;
+  }
+  #msg {
+    margin-top: 15px;
+    color: #00ff99;
+    font-weight: bold;
+  }
+</style>
 </head>
+
 <body>
 
-  <div class="card">
-    <h1>⚡ Jinx4G Session</h1>
+<div class="box">
+  <h1>Jinx4G Session ID</h1>
 
-    <button id="startBtn">Generate Session</button>
+  <input id="phone" placeholder="WhatsApp number (e.g. 1876xxxxxxx)">
+  <br>
+  <button onclick="getCode()">Get Pair Code</button>
 
-    <div id="qrBox"></div>
-
-    <div id="pairBox"></div>
-
-    <input id="pairInput" placeholder="Enter Pair Code">
-    <button id="pairBtn">Verify Pair Code</button>
-
-    <textarea id="sessionBox" readonly placeholder="SESSION_ID will appear here"></textarea>
+  <div id="verify">
+    <input id="code" placeholder="Enter pair code">
+    <br>
+    <button onclick="verifyCode()">Verify</button>
   </div>
 
-<script src="script.js"></script>
+  <div id="msg"></div>
+</div>
+
+<script>
+async function getCode() {
+  const phoneNumber = document.getElementById('phone').value;
+
+  const res = await fetch('/generate-pair-code', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phoneNumber })
+  });
+
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById('msg').innerText = 'Pair code sent to WhatsApp!';
+    document.getElementById('verify').style.display = 'block';
+  } else {
+    document.getElementById('msg').innerText = data.error;
+  }
+}
+
+async function verifyCode() {
+  const phoneNumber = document.getElementById('phone').value;
+  const pairCode = document.getElementById('code').value;
+
+  const res = await fetch('/verify-pair-code', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ phoneNumber, pairCode })
+  });
+
+  const data = await res.json();
+  document.getElementById('msg').innerText =
+    data.success ? 'Session ID sent to WhatsApp!' : data.error;
+}
+</script>
+
 </body>
 </html>
