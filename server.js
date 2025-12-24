@@ -1,74 +1,83 @@
-const express = require("express")
-const QRCode = require("qrcode")
-const fs = require("fs")
-const {
-  makeWASocket,
-  useMultiFileAuthState
-} = require("@whiskeysockets/baileys")
+const express = require('express');
+const path = require('path');
+const crypto = require('crypto');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 
-const app = express()
-app.use(express.json())
-app.use(express.static("public"))
+const app = express();
 
-let qrData = ""
-let sessionID = ""
-let pairCode = ""
-let pairVerified = false
+const client = new Client({
+  authStrategy: new LocalAuth(),
+  puppeteer: { headless: true }
+});
 
-async function startSession() {
-  const { state, saveCreds } = await useMultiFileAuthState("./session")
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-  const sock = makeWASocket({
-    auth: state,
-    printQRInTerminal: false
-  })
+// In‑memory storage
+const pairCodes = {};
+const sessionIds = {};
 
-  sock.ev.on("creds.update", saveCreds)
+// Serve HTML file
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-  sock.ev.on("connection.update", async (update) => {
-    const { qr, connection } = update
+// Generate pair code
+app.post('/generate-pair-code', async (req, res) => {
+  const { phoneNumber } = req.body;
 
-    if (qr) {
-      qrData = await QRCode.toDataURL(qr)
-      pairCode = Math.floor(100000 + Math.random() * 900000).toString()
-      pairVerified = false
-      sessionID = ""
-      console.log("PAIR CODE:", pairCode)
-    }
-
-    if (connection === "open") {
-      const creds = fs.readFileSync("./session/creds.json")
-      sessionID = Buffer.from(creds).toString("base64")
-      console.log("Jinx4G SESSION READY")
-    }
-  })
-}
-
-startSession()
-
-// Get QR
-app.get("/qr", (req, res) => {
-  if (!qrData) return res.sendStatus(204)
-  res.json({ qr: qrData, pairCode })
-})
-
-// Verify Pair Code
-app.post("/pair", (req, res) => {
-  const { code } = req.body
-  if (code === pairCode) {
-    pairVerified = true
-    return res.json({ success: true })
+  if (!phoneNumber) {
+    return res.json({ error: 'Phone number required' });
   }
-  res.status(401).json({ success: false })
-})
 
-// Get Session ID (locked)
-app.get("/session", (req, res) => {
-  if (!pairVerified) return res.sendStatus(403)
-  if (!sessionID) return res.sendStatus(204)
-  res.json({ session: sessionID })
-})
+  const pairCode = Math.floor(10000000 + Math.random() * 90000000).toString();
+  pairCodes[phoneNumber] = pairCode;
 
-app.listen(3000, () =>
-  console.log("🔥 Jinx4G Session Server running on port 3000")
-)
+  try {
+    await client.sendMessage(
+      phoneNumber,
+      `🌀 *Jinx4G Pair Code*\n\nYour code: *${pairCode}*\n\nEnter this on the website to receive your session ID.`
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.json({ error: 'Failed to send WhatsApp message' });
+  }
+});
+
+// Verify pair code → send session ID
+app.post('/verify-pair-code', async (req, res) => {
+  const { phoneNumber, pairCode } = req.body;
+
+  if (pairCodes[phoneNumber] !== pairCode) {
+    return res.json({ error: 'Invalid pair code' });
+  }
+
+  const sessionId = crypto.randomBytes(20).toString('hex');
+  sessionIds[sessionId] = phoneNumber;
+  delete pairCodes[phoneNumber];
+
+  await client.sendMessage(
+    phoneNumber,
+    `✅ *Jinx4G Session ID*\n\n\`${sessionId}\`\n\nKeep this safe.`
+  );
+
+  res.json({ success: true });
+});
+
+// WhatsApp events
+client.on('qr', qr => {
+  console.log('Scan QR Code:', qr);
+});
+
+client.on('ready', () => {
+  console.log('✅ Jinx4G WhatsApp Bot Ready');
+});
+
+client.initialize();
+
+// Start server
+app.listen(3000, () => {
+  console.log('🌐 Jinx4G Server running on http://localhost:3000');
+});
