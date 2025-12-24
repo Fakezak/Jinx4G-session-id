@@ -1,0 +1,62 @@
+body {
+  background: radial-gradient(circle, #0f0f1a, #000);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+.card {
+  background: #111;
+  border-radius: 16px;
+  padding: 25px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 0 30px #6f00ff;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #b388ff;
+}
+
+button {
+  background: linear-gradient(45deg, #6f00ff, #ff005d);
+  border: none;
+  color: white;
+  padding: 14px;
+  width: 100%;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  animation: pulse 1.5s infinite;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 10px #6f00ff }
+  50% { box-shadow: 0 0 25px #ff005d }
+  100% { box-shadow: 0 0 10px #6f00ff }
+}
+
+#qrBox img {
+  margin-top: 20px;
+  width: 220px;
+}
+
+textarea {
+  margin-top: 15px;
+  width: 100%;
+  height: 90px;
+  background: #000;
+  color: #0f0;
+  border-radius: 10px;
+  padding: 10px;
+  border: none;
+  resize: none;
+}
