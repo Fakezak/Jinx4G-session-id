@@ -10,10 +10,9 @@ body {
   width: 100vw;
   background: 
     linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.9)),
-    url("https://i.imgur.com/6X6ZQJm.png"); /* dark anime girl */
+    url("https://i.imgur.com/6X6ZQJm.png"); /* Dark anime girl */
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,7 +21,7 @@ body {
 .container {
   width: 90%;
   max-width: 420px;
-  background: rgba(10, 10, 10, 0.75);
+  background: rgba(10,10,10,0.75);
   border-radius: 15px;
   padding: 30px;
   text-align: center;
@@ -36,7 +35,6 @@ h1 {
   letter-spacing: 2px;
 }
 
-/* Animated Input */
 input {
   width: 100%;
   padding: 12px;
@@ -74,11 +72,11 @@ button:hover {
   box-shadow: 0 0 15px #ff0044;
 }
 
-#verify {
+#verifySection {
   display: none;
 }
 
-#msg {
+#message {
   margin-top: 15px;
   color: #00ff99;
   font-weight: bold;
