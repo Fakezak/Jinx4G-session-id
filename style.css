@@ -1,0 +1,86 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  background: 
+    linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.9)),
+    url("https://i.imgur.com/6X6ZQJm.png"); /* dark anime girl */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 90%;
+  max-width: 420px;
+  background: rgba(10, 10, 10, 0.75);
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 25px rgba(255,0,70,0.6);
+}
+
+h1 {
+  color: #ff0044;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+}
+
+/* Animated Input */
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: #111;
+  color: white;
+  font-size: 15px;
+  outline: none;
+  animation: glow 2.5s infinite;
+}
+
+@keyframes glow {
+  0%   { border-color: #ff0044; box-shadow: 0 0 10px #ff0044; }
+  50%  { border-color: #8a2be2; box-shadow: 0 0 15px #8a2be2; }
+  100% { border-color: #00ffff; box-shadow: 0 0 10px #00ffff; }
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(135deg, #ff0044, #8a2be2);
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #ff0044;
+}
+
+#verify {
+  display: none;
+}
+
+#msg {
+  margin-top: 15px;
+  color: #00ff99;
+  font-weight: bold;
+  font-size: 14px;
+}
